@@ -1,0 +1,13 @@
+.todo-container{
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.App{
+    background-color: black;
+    padding-bottom: 30px;
+}
