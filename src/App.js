@@ -16,7 +16,9 @@ const App = ()=> {
 
   // STATES
     const [todoList, setTodoList] = useState([])
-    const [filtro, setFiltro] = useState(null)
+    const [filtroComplete, setFiltroComplete] = useState([])
+    const [filtroUnComplete, setFiltroUnComplete] = useState([])
+    const [valor, setValor] = useState(undefined)
     const [buttonComplete, setButtonComplete] = useState(0)
     const [buttonUnComplete, setButtonUnComplete] = useState(0)
 
@@ -30,7 +32,7 @@ const App = ()=> {
       const result = await response.json();
       const resultTodoList = result.slice (0, 20);
       setTodoList(resultTodoList)
-      setFiltro(resultTodoList)
+      setValor("todo")
     }
     
     handleTodoList()
@@ -42,9 +44,12 @@ useEffect(()=>{
   const contadorTareas = ()=>{
     const complete = todoList.filter( x => x.completed === true)
     setButtonComplete(complete.length)
+    setFiltroComplete(complete)
 
     const unComplete = todoList.filter( x => x.completed === false)
     setButtonUnComplete(unComplete.length)
+    setFiltroUnComplete(unComplete)
+
   }
 
   contadorTareas()
@@ -56,20 +61,83 @@ useEffect(()=>{
   const handleFilter = (valor)=>{
 
     if(valor === null){
-      setFiltro(todoList)
+      
+      setValor("todo")
       
     }
     else if(valor === true){
-      setFiltro(todoList.filter( filtrados => filtrados.completed === true
-        ))
-        
+      setValor("complete")
     }
-    else if(valor === false){
-      setFiltro(todoList.filter(filtrados => filtrados.completed === false))
         
+    
+    else if(valor === false){
+      setValor("uncomplete")
+    }
+    
+  }
+
+
+  const handleRenderTodos = ()=>{
+
+    if(valor === "todo"){
+
+      return(
+        (todoList.map(( singleTodo )=>
+          (
+
+           <Todo 
+           key={singleTodo.id} 
+           title={singleTodo.title}
+           status={singleTodo.completed}
+           handleCompleteTodo={handleCompleteTodo}
+           id={singleTodo.id}
+           
+           />
+
+          )
+        ))
+      )
+
+    }else if (valor === "complete"){
+
+      return(
+        (filtroComplete.map(( singleTodo )=>
+          (
+
+           <Todo 
+           key={singleTodo.id} 
+           title={singleTodo.title}
+           status={singleTodo.completed}
+           handleCompleteTodo={handleCompleteTodo}
+           id={singleTodo.id}
+           
+           />
+
+          )
+        )) 
+      )
+
+    }else if(valor === "uncomplete"){
+
+      return(
+        (filtroUnComplete.map(( singleTodo )=>
+          (
+
+           <Todo 
+           key={singleTodo.id} 
+           title={singleTodo.title}
+           status={singleTodo.completed}
+           handleCompleteTodo={handleCompleteTodo}
+           id={singleTodo.id}
+           
+           />
+
+          )
+        )) 
+      )
+
     }
 
-    
   }
 
 
@@ -81,7 +149,7 @@ useEffect(()=>{
   const handleCompleteTodo = (id)=>{
     
     setTodoList(todoList.map(todo => todo.id === id ? {...todo, completed: !todo.completed}: todo))
-    setFiltro(filtro.map(todo => todo.id === id ? {...todo, completed: !todo.completed}: todo))
+   
 
   }
 
@@ -95,20 +163,7 @@ useEffect(()=>{
 
     <div className="todo-container">
       {
-        filtro && filtro.length > 0 ? (filtro.map(( singleTodo )=>{
-          return(
-
-           <Todo 
-           key={singleTodo.id} 
-           title={singleTodo.title}
-           status={singleTodo.completed}
-           handleCompleteTodo={handleCompleteTodo}
-           id={singleTodo.id}
-           
-           />
-
-          )
-        })) : (<Loader />)
+        todoList && todoList.length > 0 ? handleRenderTodos() : (<Loader />)
       }
       </div>
 
